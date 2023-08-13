@@ -24,14 +24,6 @@ const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelpCamp2";
 const MongoStore = require("connect-mongo");
 
 //mongodb://127.0.0.1:27017/yelpCamp2
-mongoose.set("strictQuery", true);
-mongoose.connect(dbUrl);
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error : "));
-db.once("open", () => {
-	console.log("Database Terkoneksi!!");
-});
 
 const app = express();
 
@@ -153,6 +145,15 @@ app.use((err, req, resp, next) => {
 	const { statusCode = 500 } = err;
 	if (!err.message) err.message = "Something Went Wrong!";
 	resp.status(statusCode).render("error", { err });
+});
+
+mongoose.set("strictQuery", true);
+mongoose.connect(dbUrl);
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error : "));
+db.once("open", () => {
+	console.log("Database Terkoneksi!!");
 });
 
 app.listen(3000, () => {
