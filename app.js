@@ -26,16 +26,13 @@ const MongoStore = require("connect-mongo");
 //mongodb://127.0.0.1:27017/yelpCamp2
 
 mongoose.set("strictQuery", true);
+mongoose.connect(dbUrl);
 
-const connectDB = async () => {
-	try {
-		const conn = await mongoose.connect(dbUrl);
-		console.log(`MongoDB Connected: ${conn.connection.host}`);
-	} catch (error) {
-		console.log(error);
-		process.exit(1);
-	}
-};
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", () => {
+	console.log("Database connected");
+});
 
 const app = express();
 
@@ -153,8 +150,6 @@ app.use((err, req, resp, next) => {
 	resp.status(statusCode).render("error", { err });
 });
 
-connectDB().then(() => {
-	app.listen(3000, () => {
-		console.log("Terhubung ke-Port 3000");
-	});
+app.listen(3000, () => {
+	console.log("Terhubung ke-Port 3000");
 });
