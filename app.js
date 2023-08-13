@@ -25,6 +25,18 @@ const MongoStore = require("connect-mongo");
 
 //mongodb://127.0.0.1:27017/yelpCamp2
 
+mongoose.set("strictQuery", true);
+
+const connectDB = async () => {
+	try {
+		const conn = await mongoose.connect(dbUrl);
+		console.log(`MongoDB Connected: ${conn.connection.host}`);
+	} catch (error) {
+		console.log(error);
+		process.exit(1);
+	}
+};
+
 const app = express();
 
 app.engine("ejs", ejsMate);
@@ -123,12 +135,6 @@ app.use((req, resp, next) => {
 	next();
 });
 
-app.get("/fake", async (req, resp) => {
-	const u = new User({ email: "p@gmail.com", username: "dipan" });
-	const newU = await User.register(u, "papa");
-	resp.send(newU);
-});
-
 app.use("/", authRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/reviews", reviewRoutes);
@@ -147,15 +153,8 @@ app.use((err, req, resp, next) => {
 	resp.status(statusCode).render("error", { err });
 });
 
-mongoose.set("strictQuery", true);
-mongoose.connect(dbUrl);
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error : "));
-db.once("open", () => {
-	console.log("Database Terkoneksi!!");
-});
-
-app.listen(3000, () => {
-	console.log("Terhubung ke-Port 3000");
+connectDB().then(() => {
+	app.listen(3000, () => {
+		console.log("Terhubung ke-Port 3000");
+	});
 });
