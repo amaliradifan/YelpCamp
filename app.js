@@ -1,7 +1,7 @@
-// if (process.env.NODE_ENV !== "production") {
-// 	require("dotenv").config();
-// }
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+	require("dotenv").config();
+}
+// require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
@@ -19,9 +19,9 @@ const authRoutes = require("./routes/auth");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
 const mongoSanitize = require("express-mongo-sanitize");
+const MongoStore = require("connect-mongo")(session);
 // const dbUrl = process.env.DB_URL;
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelpCamp2";
-const MongoStore = require("connect-mongo");
 
 //mongodb://127.0.0.1:27017/yelpCamp2
 
@@ -48,11 +48,13 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(mongoSanitize());
 
+const secret = process.env.SECRET || "inirahasia";
+
 const store = MongoStore.create({
 	mongoUrl: dbUrl,
 	touchAfter: 24 * 3600,
 	crypto: {
-		secret: "inirahasia",
+		secret,
 	},
 });
 
@@ -63,7 +65,7 @@ store.on("error", (e) => {
 const sessionConfig = {
 	store,
 	name: "session",
-	secret: "inirahasia",
+	secret,
 	resave: false,
 	saveUninitialized: true,
 	cookie: {
