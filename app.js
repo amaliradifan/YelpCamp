@@ -19,11 +19,8 @@ const authRoutes = require("./routes/auth");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
 const mongoSanitize = require("express-mongo-sanitize");
-const MongoStore = require("connect-mongo")(session);
-// const dbUrl = process.env.DB_URL;
+const MongoStore = require("connect-mongo");
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelpCamp2";
-
-//mongodb://127.0.0.1:27017/yelpCamp2
 
 mongoose.set("strictQuery", true);
 
